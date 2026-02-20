@@ -1,24 +1,82 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>ESP32 Live Camera</title>
-<style>
-body { text-align:center; font-family:Arial; }
-img { border:2px solid black; }
-</style>
+    <meta charset="UTF-8">
+    <title>ESP32 Live Camera</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+        }
+
+        h2 {
+            margin-top: 20px;
+        }
+
+        img {
+            margin-top: 20px;
+            border: 3px solid black;
+            max-width: 95%;
+            height: auto;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
 
-<h2>Live ESP32 Camera</h2>
+<h2>ESP32 Live Camera</h2>
+
 <img id="cam" width="640">
 
+<br>
+<button onclick="toggleStream()">Start / Stop</button>
+
 <script>
-function updateImage() {
-  document.getElementById("cam").src =
-  "https://d459-2401-4900-939c-d04-13f0-e702-d4d8-18cd.ngrok-free.app/capture?t=1" + Date.now();
-}
-setInterval(updateImage, 5000);
-updateImage();
+    const baseURL = "https://YOUR-NGROK-LINK.ngrok-free.app";
+    const img = document.getElementById("cam");
+
+    let streaming = false;
+    let intervalID = null;
+
+    function updateImage() {
+        let url = baseURL + "/capture?t=" + Date.now();
+        img.src = url;
+
+        img.onerror = function() {
+            console.log("Image failed:", url);
+        };
+    }
+
+    function startStream() {
+        if (!streaming) {
+            streaming = true;
+            updateImage();
+            intervalID = setInterval(updateImage, 500);
+        }
+    }
+
+    function stopStream() {
+        streaming = false;
+        clearInterval(intervalID);
+    }
+
+    function toggleStream() {
+        if (streaming) {
+            stopStream();
+        } else {
+            startStream();
+        }
+    }
+
+    // Auto start
+    startStream();
 </script>
 
 </body>
