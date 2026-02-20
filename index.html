@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>ESP32 Live Camera</title>
+
     <style>
         body {
             text-align: center;
@@ -29,6 +30,7 @@
         }
     </style>
 </head>
+
 <body>
 
 <h2>ESP32 Live Camera</h2>
@@ -39,44 +41,47 @@
 <button onclick="toggleStream()">Start / Stop</button>
 
 <script>
-    const baseURL = "https://e508-2401-4900-939c-d04-e124-1b74-3ae9-f01b.ngrok-free.app/capture?t=1";
-    const img = document.getElementById("cam");
+const baseURL = "https://e508-2401-4900-939c-d04-e124-1b74-3ae9-f01b.ngrok-free.app/capture?t=1";
+const img = document.getElementById("cam");
 
-    let streaming = false;
-    let intervalID = null;
+let streaming = false;
 
-    function updateImage() {
-        let url = baseURL + "/capture?t=" + Date.now();
-        img.src = url;
+function loadNextFrame() {
+    if (!streaming) return;
 
-        img.onerror = function() {
-            console.log("Image failed:", url);
-        };
+    img.onload = function() {
+        setTimeout(loadNextFrame, 200);   // small delay after successful frame
+    };
+
+    img.onerror = function() {
+        console.log("Frame failed, retrying...");
+        setTimeout(loadNextFrame, 1000);  // retry slower if error
+    };
+
+    img.src = baseURL + "/capture?t=" + Date.now();
+}
+
+function startStream() {
+    if (!streaming) {
+        streaming = true;
+        loadNextFrame();
     }
+}
 
-    function startStream() {
-        if (!streaming) {
-            streaming = true;
-            updateImage();
-            intervalID = setInterval(updateImage, 500);
-        }
+function stopStream() {
+    streaming = false;
+}
+
+function toggleStream() {
+    if (streaming) {
+        stopStream();
+    } else {
+        startStream();
     }
+}
 
-    function stopStream() {
-        streaming = false;
-        clearInterval(intervalID);
-    }
-
-    function toggleStream() {
-        if (streaming) {
-            stopStream();
-        } else {
-            startStream();
-        }
-    }
-
-    // Auto start
-    startStream();
+// Auto start
+startStream();
 </script>
 
 </body>
