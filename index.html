@@ -1,19 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>ESP32 Public Camera</title>
+<title>ESP32 Live Camera</title>
+<style>
+body { text-align:center; font-family:Arial; }
+img { border:2px solid black; }
+</style>
 </head>
 <body>
 
 <h2>Live ESP32 Camera</h2>
-
 <img id="cam" width="640">
 
 <script>
-setInterval(function() {
-    document.getElementById("cam").src =
-    "https://5a13-2401-4900-939c-d04-13f0-e702-d4d8-18cd.ngrok-free.app/capture?t=1" + new Date().getTime();
-}, 1000);
+function updateImage() {
+  document.getElementById("cam").src =
+  "https://5a13-2401-4900-939c-d04-13f0-e702-d4d8-18cd.ngrok-free.app/capture?t=1" + Date.now();
+}
+setInterval(updateImage, 200);
+updateImage();
 </script>
 
 </body>
