@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>ESP32 Public Camera</title>
+</head>
+<body>
+
+<h2>Live ESP32 Camera</h2>
+
+<img id="cam" width="640">
+
+<script>
+setInterval(function() {
+    document.getElementById("cam").src =
+    "https://d834-2401-4900-939c-d04-39e6-53b-b4e0-9656.ngrok-free.app/capture?t=" + new Date().getTime();
+}, 500);
+</script>
+
+</body>
+</html>
